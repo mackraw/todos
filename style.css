@@ -1,0 +1,71 @@
+html, body, ::before, ::after, * {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Lato', sans-serif;
+}
+
+.theMeat {
+	width: 40vw;
+	margin: auto;
+	text-align: center;
+	margin-top: 15vh;
+	min-width: 400px;
+}
+
+ul {
+	list-style: none;
+	text-align: left;
+}
+
+li {
+	margin: 10px;
+}
+
+button {
+	padding: 7px 14px;
+	border-radius: 10px;
+	background-color: #4682B4;
+	border: 0;
+	color: #fff;
+}
+
+button:hover {
+	/*box-shadow: 0 0 3px rgba(50, 50, 50, 0.5);*/
+	background-color: #4785b8;
+  box-shadow: 3px 5px 15px rgba(50, 50, 50, 0.3);
+}
+
+input {
+	padding: 5px;
+	font-family: 'Lato', sans-serif;
+}
+
+.deleteBtn, .completeBtn {
+  margin-left: 5px;
+}
+
+.completed {
+	color: #696969;
+	text-decoration: line-through;
+	font-style: italic;
+}
+
+.deleteBtn {
+	background-color: #FA8072;
+}
+
+.deleteBtn:hover {
+	background-color: #f96353;
+}
+
+.completeBtn {
+	background-color: #3CB371;
+}
+
+.completeBtn:hover {
+	background-color: #339961;
+}
+
