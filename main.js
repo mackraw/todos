@@ -4,7 +4,8 @@
 
 let todos = [];
 const addText = document.getElementById('inputItem');
-const todosUl = document.querySelector('ul');
+// const todosUl = document.querySelector('ul');
+const todosList = document.getElementById('mainList');
 
 // Add item to array
 
@@ -33,20 +34,28 @@ addText.addEventListener('keyup', function(event) {
 
 function display() {
   // let todosUl = document.querySelector('ul');
-  todosUl.innerHTML = '';
+  todosList.innerHTML = '';
   for (var i = 0; i < todos.length; i++) {
 	  let item = todos[i];
-	  let todoLi = document.createElement('li');
-	  todoLi.id = i;
-	  todoLi.innerText = item.content;
-    todoLi.appendChild(createCompleteButton());
-	  todoLi.appendChild(createDeleteButton());
-    todosUl.appendChild(todoLi);
+	  let todoItem = document.createElement('div');
+	  todoItem.id = i;
+
+	  // todoItem.innerText = item.content;
+	  let mainLine = todoItem.appendChild(document.createElement('div'));
+	  mainLine.className = 'mainLine';
+	  mainLine.innerHTML = '<span class="itemText">' + item.content + '</span><input value="' + item.content + '" class="edit hidden" />';
+    // todoItem.appendChild(createCompleteButton());
+	  mainLine.insertAdjacentElement('afterbegin', createCompleteButton());
+	  mainLine.appendChild(createDeleteButton());
+    todosList.appendChild(todoItem);
     if (item.completed === false) {
-		  todoLi.className = 'active';
+		  todoItem.className = 'active listItem';
 	  } else {
-			todoLi.className = 'completed';
+			todoItem.className = 'completed listItem';
 	  }
+
+	  let optionsLine = todoItem.appendChild(document.createElement('div'));
+	  optionsLine.className = 'optionsLine';
 	}
 }
 
@@ -66,14 +75,38 @@ function deleteItem(position) {
 	display();
 }
 
+function editItem(position) {
+  let itemText = document.getElementsByClassName('itemText')[position];
+  let editedItem = document.getElementsByClassName('edit')[position];
+  let itemId = itemText.parentNode.parentNode.id;
+	itemText.className = 'itemText hidden';
+  editedItem.className = 'edit';
+
+  function saveChanges() {
+  	itemText.innerText = editedItem.value;
+    itemText.className = 'itemText';
+    editedItem.className = 'edit hidden';
+    todos[itemId].content = editedItem.value;
+  }
+
+  editedItem.addEventListener('keyup', function(event) {
+    if (event.keyCode === 13) {
+      saveChanges();
+    }
+  });
+  editedItem.onblur = saveChanges;
+}
+
 function chooseCorrectButton() {
   //let todosUl = document.querySelector('ul');
-  todosUl.addEventListener('click', function(event) {
+  todosList.addEventListener('click', function(event) {
     let elementClicked = event.target;
     if (elementClicked.className === 'deleteBtn') {
-      deleteItem(parseInt(elementClicked.parentNode.id));
+      deleteItem(parseInt(elementClicked.parentNode.parentNode.id));
     } else if (elementClicked.className === 'completeBtn') {
-    	completeItem(parseInt(elementClicked.parentNode.id));
+    	completeItem(parseInt(elementClicked.parentNode.parentNode.id));
+    } else if (elementClicked.className === 'itemText') {
+    	editItem(parseInt(elementClicked.parentNode.parentNode.id));
     }
   });
 }
@@ -85,12 +118,8 @@ chooseCorrectButton();
 function createCompleteButton() {
 	let completeButton = document.createElement('button');
 	completeButton.className = 'completeBtn';
-	completeButton.innerText = 'Toggle';
-	// if (todos[position].completed === false) {
-	// 	completeButton.innerText = 'Complete';
-	// } else {
-	// 	completeButton.innerText = 'UnComplete';
-	// }
+	completeButton.innerHTML = '&#10003;';
+
 	return completeButton;
 }
 
@@ -98,14 +127,11 @@ function createCompleteButton() {
 
 function completeItem(position) {
 	todos[position].completed = !todos[position].completed;
-  // let todoLi = document.getElementById(parseInt(position));
-  // let completeButton = todoLi.firstElementChild;  // document.getElementByTagName('button');
-	// if (todos[position].completed === false) {
-	// 	// completeButton.innerText = 'Complete';
-	// 	todoLi.className = 'nope';
-	// } else {
-	// 	// completeButton.innerText = 'UnComplete';
-	// 	todoLi.className = 'completed';
-	// }
+
+	// This shit ain't working:  :(
+ //  let todoItem = document.getElementById(parseInt(position));
+ //  let todoMainLine = todoItem.firstElementChild;
+ //  let completeButton = todoMainLine.firstElementChild;
+	// completeButton.className = 'completeBtnDone';
 	display();
 }
