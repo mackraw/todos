@@ -1,14 +1,14 @@
 /* jshint esversion: 6 */
 
 // Create array of todo items
-
 let todos = [];
+
+// Global
 const addText = document.getElementById('inputItem');
-// const todosUl = document.querySelector('ul');
 const todosList = document.getElementById('mainList');
+const buttonAdd = document.getElementById('btnAdd');
 
 // Add item to array
-
 function addItem() {
   todos.push(
   	{
@@ -19,11 +19,9 @@ function addItem() {
   display();
 }
 
-const buttonAdd = document.getElementById('btnAdd');
 buttonAdd.onclick = addItem;
 
 // Add on enter press
-
 addText.addEventListener('keyup', function(event) {
 	if (event.keyCode === 13) {
 		buttonAdd.click();
@@ -31,62 +29,87 @@ addText.addEventListener('keyup', function(event) {
 });
 
 // Display array
-
 function display() {
-  // let todosUl = document.querySelector('ul');
   todosList.innerHTML = '';
   for (var i = 0; i < todos.length; i++) {
 	  let item = todos[i];
-	  let todoItem = document.createElement('div');
-	  todoItem.id = i;
+	  let listItem = document.createElement('div');
+	  listItem.id = i;
+	  listItem.classList.add('listItem');
 
-	  // todoItem.innerText = item.content;
-	  let mainLine = todoItem.appendChild(document.createElement('div'));
-	  mainLine.className = 'mainLine';
-	  mainLine.innerHTML = '<span class="itemText">' + item.content + '</span><input value="' + item.content + '" class="edit hidden" />';
-    // todoItem.appendChild(createCompleteButton());
-	  mainLine.insertAdjacentElement('afterbegin', createCompleteButton());
-	  mainLine.appendChild(createDeleteButton());
-    todosList.appendChild(todoItem);
-    if (item.completed === false) {
-		  todoItem.className = 'active listItem';
+	  let mainLine = listItem.appendChild(document.createElement('div'));
+	  mainLine.classList.add('mainLine');
+	  
+	  //add text content of list item
+	  let itemText = mainLine.appendChild(document.createElement('span'));
+	  itemText.innerText = item.content;
+	  itemText.classList.add('itemText');
+	  if (item.completed === false) {
+		  itemText.classList.add('activeText');
+		  itemText.classList.remove('doneText');
 	  } else {
-			todoItem.className = 'completed listItem';
+			itemText.classList.add('doneText');
+			itemText.classList.remove('activeText');
 	  }
 
-	  let optionsLine = todoItem.appendChild(document.createElement('div'));
+	  // add, hide and populate input element
+	  let itemEdit = mainLine.appendChild(document.createElement('input'));
+	  itemEdit.value = item.content;
+	  itemEdit.classList.add('edit', 'hidden');
+
+	  // add complete button
+	  let completeButton = document.createElement('button');
+	  completeButton.innerHTML = '&#10004;';
+	  completeButton.classList.add('completeBtn');
+	  
+	  if (item.completed !== false) {
+      completeButton.classList.add('doneBtn');
+    } else {
+    completeButton.classList.remove('doneBtn');
+    }
+
+	  mainLine.insertAdjacentElement('afterbegin', completeButton);
+
+	  // add delete button
+	  mainLine.appendChild(createDeleteButton());
+
+	  // add options line 
+	  let optionsLine = listItem.appendChild(document.createElement('div'));
 	  optionsLine.className = 'optionsLine';
+
+	  todosList.appendChild(listItem);
 	}
 }
 
-// Add delete button
-
+// Create delete button
 function createDeleteButton() {
   let deleteButton = document.createElement('button');
-	deleteButton.innerText = 'Delete';
+	deleteButton.innerHTML = '&#10060;';
 	deleteButton.className = 'deleteBtn';
 	return deleteButton;
 }
 
 // Delete item
-
 function deleteItem(position) {
 	todos.splice(position, 1);
 	display();
 }
 
+// Edit item
 function editItem(position) {
   let itemText = document.getElementsByClassName('itemText')[position];
   let editedItem = document.getElementsByClassName('edit')[position];
   let itemId = itemText.parentNode.parentNode.id;
-	itemText.className = 'itemText hidden';
-  editedItem.className = 'edit';
+	itemText.classList.add('hidden');
+  editedItem.classList.remove('hidden');
+  editedItem.focus();
 
   function saveChanges() {
   	itemText.innerText = editedItem.value;
-    itemText.className = 'itemText';
-    editedItem.className = 'edit hidden';
+    itemText.classList.remove('hidden');
+    editedItem.classList.add('hidden');
     todos[itemId].content = editedItem.value;
+    display();
   }
 
   editedItem.addEventListener('keyup', function(event) {
@@ -97,41 +120,23 @@ function editItem(position) {
   editedItem.onblur = saveChanges;
 }
 
-function chooseCorrectButton() {
-  //let todosUl = document.querySelector('ul');
+// Complete item
+function completeItem(position) {
+	todos[position].completed = !todos[position].completed;
+	display();
+}
+
+// work only on the correct list item
+function chooseCorrect() {
   todosList.addEventListener('click', function(event) {
-    let elementClicked = event.target;
-    if (elementClicked.className === 'deleteBtn') {
-      deleteItem(parseInt(elementClicked.parentNode.parentNode.id));
-    } else if (elementClicked.className === 'completeBtn') {
-    	completeItem(parseInt(elementClicked.parentNode.parentNode.id));
-    } else if (elementClicked.className === 'itemText') {
-    	editItem(parseInt(elementClicked.parentNode.parentNode.id));
+    let elClicked = event.target;
+    if (elClicked.classList.contains('deleteBtn')) {
+      deleteItem(parseInt(elClicked.parentNode.parentNode.id));
+    } else if (elClicked.classList.contains('completeBtn')) {
+    	completeItem(parseInt(elClicked.parentNode.parentNode.id));
+    } else if (elClicked.classList.contains('itemText')) {
+    	editItem(parseInt(elClicked.parentNode.parentNode.id));
     }
   });
 }
-
-chooseCorrectButton();
-
-// Add Complete button
-
-function createCompleteButton() {
-	let completeButton = document.createElement('button');
-	completeButton.className = 'completeBtn';
-	completeButton.innerHTML = '&#10003;';
-
-	return completeButton;
-}
-
-// Complete item
-
-function completeItem(position) {
-	todos[position].completed = !todos[position].completed;
-
-	// This shit ain't working:  :(
- //  let todoItem = document.getElementById(parseInt(position));
- //  let todoMainLine = todoItem.firstElementChild;
- //  let completeButton = todoMainLine.firstElementChild;
-	// completeButton.className = 'completeBtnDone';
-	display();
-}
+chooseCorrect();
